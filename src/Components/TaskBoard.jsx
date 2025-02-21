@@ -5,9 +5,10 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { IoMdTime } from "react-icons/io";
 import { MdOutlineDescription, MdOutlineTitle, MdSubtitles } from "react-icons/md";
+import io from "socket.io-client"; // Import socket.io-client
 
-
-// eta main-------------------------------------------------------------------
+// Connect to the WebSocket server
+const socket = io("http://localhost:5000");
 
 function TaskBoard() {
   const [tasks, setTasks] = useState([]);
@@ -17,6 +18,19 @@ function TaskBoard() {
     axios.get("http://localhost:5000/tasks")
       .then(response => setTasks(response.data))
       .catch(error => console.error("Error fetching tasks:", error));
+
+    // Listen for task updates from the server
+    socket.on("taskUpdated", (updatedTask) => {
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task._id === updatedTask._id ? updatedTask : task
+        )
+      );
+    });
+
+    return () => {
+      socket.off("taskUpdated");
+    };
   }, []);
 
   const onDragEnd = async (result) => {
@@ -26,12 +40,18 @@ function TaskBoard() {
     const items = Array.from(tasks);
     const [reorderedItem] = items.splice(source.index, 1);
     items.splice(destination.index, 0, reorderedItem);
-    
-
-
 
     const updatedTask = { ...reorderedItem, category: destination.droppableId };
     await axios.put(`http://localhost:5000/tasks/${updatedTask._id}`, updatedTask);
+
+    // Emit the updated task to all connected clients
+    socket.emit("taskUpdated", updatedTask); // Sending task update through WebSocket
+
+    Swal.fire({
+      title: 'Task Moved!',
+      text: `The task "${updatedTask.title}" has been moved.`,
+      icon: 'success',
+    });
 
     setTasks(items);
   };
@@ -66,7 +86,7 @@ function TaskBoard() {
   };
 
   return (
-    <div className="p-5  min-h-screen mt-20">
+    <div className="p-5 min-h-screen mt-20">
       <h1 className="text-3xl font-bold text-center mb-5">Task Board</h1>
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 justify-center gap-5">
@@ -76,7 +96,7 @@ function TaskBoard() {
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="bg-white shadow-lg p-5 w-96 rounded-lg  "
+                  className="bg-white shadow-lg p-5 w-96 rounded-lg"
                 >
                   <h2 className="text-xl font-semibold mb-3 text-center">{category}</h2>
                   {tasks.filter(task => task.category === category).map((task, index) => (

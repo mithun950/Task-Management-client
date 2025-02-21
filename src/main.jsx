@@ -8,6 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import TaskList from "./Components/TaskList";
 import TaskForm from "./Components/TaskForm";
 import TaskBoard from "./Components/TaskBoard";
+import PrivateRoute from "./routes/PrivateRoute";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,15 +16,15 @@ const router = createBrowserRouter([
     children: [
      {
       path: "/",
-      element: <TaskBoard></TaskBoard>,
+      element:  <TaskBoard></TaskBoard>,
      },
       {
         path:"/",
-        element:<TaskList></TaskList>
+        element: <PrivateRoute><TaskList></TaskList></PrivateRoute>
       },
       {
         path:"/add-task",
-        element:<TaskForm></TaskForm>
+        element: <PrivateRoute><TaskForm></TaskForm></PrivateRoute>
       },
     ]
   },
