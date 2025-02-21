@@ -3,6 +3,8 @@ import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { IoMdTime } from "react-icons/io";
+import { MdOutlineDescription, MdOutlineTitle, MdSubtitles } from "react-icons/md";
 
 
 // eta main-------------------------------------------------------------------
@@ -24,7 +26,7 @@ function TaskBoard() {
     const items = Array.from(tasks);
     const [reorderedItem] = items.splice(source.index, 1);
     items.splice(destination.index, 0, reorderedItem);
-    setTasks(items);  
+    
 
 
 
@@ -64,17 +66,17 @@ function TaskBoard() {
   };
 
   return (
-    <div className="p-5 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-5">Task Management</h1>
+    <div className="p-5  min-h-screen mt-20">
+      <h1 className="text-3xl font-bold text-center mb-5">Task Board</h1>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex justify-center gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 justify-center gap-5">
           {['To-Do', 'In Progress', 'Done'].map((category) => (
             <Droppable key={category} droppableId={category}>
               {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="bg-white shadow-lg p-5 w-80 rounded-lg"
+                  className="bg-white shadow-lg p-5 w-96 rounded-lg  "
                 >
                   <h2 className="text-xl font-semibold mb-3 text-center">{category}</h2>
                   {tasks.filter(task => task.category === category).map((task, index) => (
@@ -84,11 +86,12 @@ function TaskBoard() {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="bg-gray-200 p-3 mb-2 rounded-md flex justify-between items-center"
+                          className="bg-gray-200 p-3 mb-4 rounded-md flex justify-between items-center"
                         >
                           <div>
-                            <h3 className="font-bold">{task.title}</h3>
-                            <p>{task.description}</p>
+                            <h3 className="font-bold flex items-center gap-1"><MdSubtitles className="text-2xl"/>{task.title}</h3>
+                            <p className="flex items-center gap-1 mt-2"><MdOutlineDescription  className="text-2xl" />{task.description}</p>
+                            <p className="flex items-center gap-1 mt-2"><IoMdTime  className="text-2xl" />{task.timestamp}</p>
                           </div>
                           <div className="flex gap-2">
                             <button onClick={() => handleEditClick(task)} className="text-blue-500">
