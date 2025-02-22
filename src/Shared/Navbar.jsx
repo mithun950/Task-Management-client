@@ -13,7 +13,8 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Task List", path: "/" },
+    { name: "Task Board", path: "/" },
+    { name: "Task List", path: "/taskList" },
     { name: "Add Task", path: "/add-task" },
   ];
 

@@ -5,32 +5,15 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { IoMdTime } from "react-icons/io";
 import { MdOutlineDescription, MdOutlineTitle, MdSubtitles } from "react-icons/md";
-import io from "socket.io-client"; // Import socket.io-client
-
-// Connect to the WebSocket server
-const socket = io("http://localhost:5000");
 
 function TaskBoard() {
   const [tasks, setTasks] = useState([]);
   const [editTask, setEditTask] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/tasks")
+    axios.get("https://task-management-backend-eta-three.vercel.app/tasks")
       .then(response => setTasks(response.data))
       .catch(error => console.error("Error fetching tasks:", error));
-
-    // Listen for task updates from the server
-    socket.on("taskUpdated", (updatedTask) => {
-      setTasks(prevTasks => 
-        prevTasks.map(task => 
-          task._id === updatedTask._id ? updatedTask : task
-        )
-      );
-    });
-
-    return () => {
-      socket.off("taskUpdated");
-    };
   }, []);
 
   const onDragEnd = async (result) => {
@@ -42,10 +25,8 @@ function TaskBoard() {
     items.splice(destination.index, 0, reorderedItem);
 
     const updatedTask = { ...reorderedItem, category: destination.droppableId };
-    await axios.put(`http://localhost:5000/tasks/${updatedTask._id}`, updatedTask);
-
-    // Emit the updated task to all connected clients
-    socket.emit("taskUpdated", updatedTask); // Sending task update through WebSocket
+    await axios.put(`https://task-management-backend-eta-three.vercel.app
+/tasks/${updatedTask._id}`, updatedTask);
 
     Swal.fire({
       title: 'Task Moved!',
@@ -67,7 +48,8 @@ function TaskBoard() {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:5000/tasks/${id}`);
+        await axios.delete(`https://task-management-backend-eta-three.vercel.app
+/tasks/${id}`);
         setTasks(tasks.filter(task => task._id !== id));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       }
@@ -80,7 +62,8 @@ function TaskBoard() {
 
   const handleUpdateTask = async (e) => {
     e.preventDefault();
-    await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editTask);
+    await axios.put(`https://task-management-backend-eta-three.vercel.app
+/tasks/${editTask._id}`, editTask);
     setTasks(tasks.map(task => (task._id === editTask._id ? editTask : task)));
     setEditTask(null);
   };
