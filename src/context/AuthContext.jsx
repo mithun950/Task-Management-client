@@ -9,12 +9,13 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await axios.post("https://task-management-backend-eta-three.vercel.app/users", {
+        await axios.post("https://task-management-backend-ten-flame.vercel.app/users", {
           uid: currentUser.uid,
           email: currentUser.email,
           displayName: currentUser.displayName
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -37,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, googleSignIn, logout }}>
+    <AuthContext.Provider value={{ user, googleSignIn, logout,loading,setLoading }}>
       {children}
     </AuthContext.Provider>
   );

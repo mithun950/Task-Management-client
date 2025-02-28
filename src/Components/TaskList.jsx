@@ -6,7 +6,7 @@ function TaskTable() {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    axios.get("https://task-management-backend-eta-three.vercel.app/tasks")
+    axios.get("https://task-management-backend-ten-flame.vercel.app/tasks")
       .then(response => setTasks(response.data))
       .catch(error => console.error("Error fetching tasks:", error));
   }, []);
@@ -21,7 +21,7 @@ function TaskTable() {
     items.splice(destination.index, 0, movedTask);
 
     try {
-      await axios.put(`https://task-management-backend-eta-three.vercel.app
+      await axios.put(`https://task-management-backend-ten-flame.vercel.app
 /tasks/${movedTask._id}`, movedTask);
       setTasks(items);
     } catch (error) {
